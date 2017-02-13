@@ -62,7 +62,7 @@ trait TRelations
                 $class = array_pop($class);
                 return '__' . strtolower($class) . '_id';
             case $class::MANY_TO_MANY:
-		if (!empty($relation['pivot'])) {
+		        if (!empty($relation['pivot'])) {
                     return $relation['pivot'];
                 }
                 $thisTableName = $class::getTableName();
