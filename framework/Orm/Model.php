@@ -128,7 +128,9 @@ abstract class Model
             } else {
                 $app = \T4\Mvc\Application::instance();
             }
-            $connection = $app->db->{$connection};
+            $connection = ('default' != $connection) ? $app->db->{$connection} : (
+            (self::$connections['default']) ?: self::$connections['default'] = $app->db->{$connection}
+            );
         }
         self::$connections[get_called_class()] = $connection;
     }
