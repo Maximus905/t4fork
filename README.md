@@ -28,6 +28,6 @@ static protected $schema = [
 ]
 ];
 
-3) (fixValidateProperty) Для Postgresql изменил методы findAllByQuery, findByQuery, innerSet (трейт TStdGetSet).
+3) (fixValidateProperty) Для Postgresql, MySQL изменил методы findAllByQuery, findByQuery, innerSet (трейт TStdGetSet).
 Метод валидации свойств теперь  не вызывается при выборке объекта из базы.
 В методе валидации свойства isNew === false при  выборке объекта из базы.
