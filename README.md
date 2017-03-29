@@ -27,3 +27,7 @@ static protected $schema = [
 'authors' => ['type' => self::MANY_TO_MANY, 'model' => Author::class, 'pivot' =>'schema_name.link_table_name']
 ]
 ];
+
+3) (fixValidateProperty) Для Postgresql изменил методы findAllByQuery, findByQuery, innerSet (трейт TStdGetSet).
+Метод валидации свойств теперь  не вызывается при выборке объекта из базы.
+В методе валидации свойства isNew === false при  выборке объекта из базы.
