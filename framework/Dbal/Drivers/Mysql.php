@@ -130,8 +130,10 @@ class Mysql
                 $ddl = 'CHAR(' . (isset($options['length']) ? (int)$options['length'] : 255) . ')';
                 break;
             case 'string':
-            default:
                 $ddl = 'VARCHAR(' . (isset($options['length']) ? (int)$options['length'] : 255) . ')';
+                break;
+            default:
+                $ddl = $options['type'];
                 break;
         }
 
@@ -188,6 +190,7 @@ class Mysql
         $indexesDDL = [];
 
         $hasPK = false;
+
         foreach ($columns as $name => $options) {
             $columnsDDL[] = $this->createColumnDDL($name, $options);
             if ('pk' == $options['type']) {
@@ -198,13 +201,17 @@ class Mysql
                 $indexesDDL[] = $this->createIndexDDL('', ['type'=>'index', 'columns'=>[$name]]);
             }
         }
-        if (!$hasPK) {
-            array_unshift($columnsDDL, $this->createColumnDDL(Model::PK, ['type' => 'pk']));
-            array_unshift($indexesDDL, $this->createIndexDDL('', ['type'=>'primary', 'columns'=>[Model::PK]]));
-        }
 
         foreach ($indexes as $name => $options) {
             $indexesDDL[] = $this->createIndexDDL(is_numeric($name) ? '' : $name, $options);
+            if ('primary' == $options['type']) {
+                $hasPK = true;
+            }
+        }
+
+        if (!$hasPK) {
+            array_unshift($columnsDDL, $this->createColumnDDL(Model::PK, ['type' => 'pk']));
+            array_unshift($indexesDDL, $this->createIndexDDL('', ['type'=>'primary', 'columns'=>[Model::PK]]));
         }
 
         $sql .= "(\n" .
@@ -524,7 +531,14 @@ class Mysql
             } else {
                 $cols[] = $column;
                 $sets[$column] = ':' . $column;
-                $data[':'.$column] = $model->{$column};
+                switch ($def['type']) {
+                    case 'boolean':
+                        $data[':' . $column] = (int)$model->{$column};
+                        break;
+                    default:
+                        $data[':' . $column] = $model->{$column};
+                        break;
+                }
             }
         }
 

@@ -110,12 +110,10 @@ class Pgsql
                 $ddl = 'CHARACTER(' . (isset($options['length']) ? (int)$options['length'] : 255) . ')';
                 break;
             case 'string':
+                $ddl = 'VARCHAR(' . (isset($options['length']) ? (int)$options['length'] : 255) . ')';
+                break;
             default:
-                if (isset($options['length'])) {
-                    $ddl = 'VARCHAR(' . (int)$options['length'] . ')';
-                } else {
-                    $ddl = 'VARCHAR';
-                }
+                $ddl = $options['type'];
                 break;
         }
 
@@ -186,10 +184,6 @@ class Pgsql
 
         }
 
-        if (!$hasPK) {
-            array_unshift($columnsDDL, $this->createColumnDDL($tableName, Model::PK, ['type' => 'pk']));
-        }
-
         $indexesDDL = [];
         $columnsUsed = [];
 
@@ -202,6 +196,10 @@ class Pgsql
             }
             $indexesDDL[] = 'CREATE ' . $this->createIndexDDL($tableName, $name, $options);
             $columnsUsed[] = $options['columns'];
+        }
+
+        if (!$hasPK) {
+            array_unshift($columnsDDL, $this->createColumnDDL($tableName, Model::PK, ['type' => 'pk']));
         }
 
         $createTableDDL = 'CREATE TABLE ' . $this->quoteName($tableName) . "\n" . '(' . implode(', ', array_unique($columnsDDL)) . ')';
@@ -332,12 +330,10 @@ class Pgsql
             $query = $this->makeQueryString($query);
         }
         /** @var \T4\Orm\Model $class */
-        $result = $class::getDbConnection()->query($query, $params)->fetchAllObjects($class);
-        if (!empty($result)) {
-            $ret = new Collection($result);
-            $ret->setNew(false);
-        } else {
-            $ret = new Collection();
+        $result = $class::getDbConnection()->query($query, $params)->fetchAll(\PDO::FETCH_ASSOC);
+        $ret = new Collection();
+        foreach ($result as $item) {
+            $ret->add((new $class())->setNew(false)->fromArray($item));
         }
         return $ret;
     }
@@ -353,9 +349,10 @@ class Pgsql
             $query = $this->makeQueryString($query);
         }
         /** @var \T4\Orm\Model $class */
-        $result = $class::getDbConnection()->query($query, $params)->fetchObject($class);
-        if (!empty($result))
-            $result->setNew(false);
+        $result = $class::getDbConnection()->query($query, $params)->fetch(\PDO::FETCH_ASSOC);
+        if (!empty($result)) {
+            $result = (new $class())->setNew(false)->fromArray($result);
+        }
         return $result;
     }
 
@@ -554,7 +551,14 @@ class Pgsql
                 $cols[] = $this->quoteName($column);
                 $prep[] = ':' . $column;
                 $sets[] = '' . $this->quoteName($column) . '=:' . $column;
-                $data[':' . $column] = $model->{$column};
+                switch ($def['type']) {
+                    case 'boolean':
+                        $data[':' . $column] = (int)$model->{$column};
+                        break;
+                    default:
+                        $data[':' . $column] = $model->{$column};
+                        break;
+                }
             }
         }
 
