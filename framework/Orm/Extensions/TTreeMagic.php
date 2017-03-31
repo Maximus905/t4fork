@@ -12,6 +12,10 @@ trait TTreeMagic
         switch (true) {
             case 'findAllTree' == $method:
                 return true;
+                break;
+            case 'findAllRoots' == $method:
+                return true;
+                break;
         }
         return false;
     }
@@ -24,6 +28,13 @@ trait TTreeMagic
         switch (true) {
             case 'findAllTree' == $method:
                 return $class::findAll(['order'=>'__lft']);
+                break;
+            case 'findAllRoots' == $method:
+                $query = (new Query())
+                    ->select()
+                    ->from($class::getTableName())
+                    ->where('__prt ISNULL');
+                return $class::findAllByQuery($query);
                 break;
         }
     }
