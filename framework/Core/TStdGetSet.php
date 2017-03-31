@@ -46,12 +46,11 @@ trait TStdGetSet
     protected function innerSet($key, $val)
     {
         $setMethod = 'set' . ucfirst($key);
-        $isNewMethod = 'isNew';
         if (method_exists($this, $setMethod)) {
 
             $this->$setMethod($val);
 
-        } elseif (method_exists($this, $isNewMethod) && true === $this->$isNewMethod()) {
+        } else {
 
             $validateMethod = 'validate' . ucfirst($key);
             if (method_exists($this, $validateMethod)) {
@@ -86,12 +85,6 @@ trait TStdGetSet
                 $this->__data[$key] = $val;
             }
 
-        } else {
-            if ('' == $key) {
-                $this->__data[] = $val;
-            } else {
-                $this->__data[$key] = $val;
-            }
         }
     }
 
