@@ -28,17 +28,29 @@ class Std
      * @param array $data
      * @return $this
      */
-    public function fromArray($data)
+    public function fromArray($data, $noValidate = false)
     {
         $data = (array)$data;
-        foreach ($data as $key => $value) {
-            if (is_null($value) || is_scalar($value) || $value instanceof \Closure) {
-                $this->innerSet($key, $value);
-            } else {
-                $this->innerSet($key, new static);
-                $this->{$key}->fromArray($value);
+        if (false === $noValidate) {
+            foreach ($data as $key => $value) {
+                if (is_null($value) || is_scalar($value) || $value instanceof \Closure) {
+                    $this->innerSet($key, $value);
+                } else {
+                    $this->innerSet($key, new static);
+                    $this->{$key}->fromArray($value);
+                }
+            }
+        } else {
+            foreach ($data as $key => $value) {
+                if (is_null($value) || is_scalar($value) || $value instanceof \Closure) {
+                    $this->innerSetNoValidate($key, $value);
+                } else {
+                    $this->innerSetNoValidate($key, new static);
+                    $this->{$key}->fromArray($value, $noValidate);
+                }
             }
         }
+
         return $this;
     }
 

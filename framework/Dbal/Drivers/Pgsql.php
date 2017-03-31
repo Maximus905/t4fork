@@ -333,7 +333,7 @@ class Pgsql
         $result = $class::getDbConnection()->query($query, $params)->fetchAll(\PDO::FETCH_ASSOC);
         $ret = new Collection();
         foreach ($result as $item) {
-            $ret->add((new $class())->setNew(false)->fromArray($item));
+            $ret->add((new $class())->setNew(false)->fromArray($item, true));
         }
         return $ret;
     }
@@ -351,7 +351,7 @@ class Pgsql
         /** @var \T4\Orm\Model $class */
         $result = $class::getDbConnection()->query($query, $params)->fetch(\PDO::FETCH_ASSOC);
         if (!empty($result)) {
-            $result = (new $class())->setNew(false)->fromArray($result);
+            $result = (new $class())->setNew(false)->fromArray($result, true);
         }
         return $result;
     }
