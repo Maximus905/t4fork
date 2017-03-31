@@ -34,4 +34,4 @@ static protected $schema = [
 
 4) (addMethodsToTreeExtension) Добавлен статический метод метод findAllRoots(). Ищет все элементы у которых parent == null.
 
-5) добавил свойство isUpdated. Устанавливается в true, когда isNew == false и успешно отработал валидатор любого свойства объекта. Сбрасывается в false после save(). 
+5) добавил свойства isUpdated, wasUpdated. isUpdated устанавливается в true, когда isNew == false и успешно отработал валидатор любого свойства объекта. Сбрасывается в false после save(). wasUpdated устанавливается после save(), но перед afterSave() (по ананлогии с isNew wasNew).
