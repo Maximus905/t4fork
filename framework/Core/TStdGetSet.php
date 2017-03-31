@@ -88,6 +88,24 @@ trait TStdGetSet
         }
     }
 
+    protected function innerSetNoValidate($key, $val)
+    {
+        $setMethod = 'set' . ucfirst($key);
+        if (method_exists($this, $setMethod)) {
+
+            $this->$setMethod($val);
+
+        } else {
+            if ('' == $key) {
+                $this->__data[] = $val;
+            } else {
+                $this->__data[$key] = $val;
+            }
+
+        }
+    }
+
+
     /**
      * \ArrayAccess implementation
      */
