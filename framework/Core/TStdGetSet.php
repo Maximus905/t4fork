@@ -71,7 +71,9 @@ trait TStdGetSet
                         throw $errors;
                     }
                 }
-
+                if (isset($this->isNew) && false === $this->isNew) {
+                    $this->isUpdated = true;
+                }
             }
 
             $sanitizeMethod = 'sanitize' . ucfirst($key);
