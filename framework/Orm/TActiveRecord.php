@@ -57,6 +57,9 @@ trait TActiveRecord
                 $this->wasNew = true;
             }
             $this->setNew(false);
+            if (isset($this->isUpdated)) {
+                $this->isUpdated = false;
+            }
         } else {
             return false;
         }
