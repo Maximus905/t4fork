@@ -44,6 +44,9 @@ trait TPgsqlQuery
         }
 
         $sql  = 'SELECT ';
+        if (! empty($query->distinct)) {
+            $sql .= 'DISTINCT ';
+        }
         if ($query->columns == ['*']) {
             $sql .= '*';
         } else {
