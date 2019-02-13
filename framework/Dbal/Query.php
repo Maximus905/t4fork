@@ -136,6 +136,11 @@ class Query
         }
         return $names;
     }
+    public function distinct()
+    {
+        $this->distinct = 'distinct';
+        return $this;
+    }
 
     /**
      * Set all columns and set action to select

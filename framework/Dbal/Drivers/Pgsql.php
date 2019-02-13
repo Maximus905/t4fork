@@ -337,12 +337,10 @@ class Pgsql
             $query = $this->makeQueryString($query);
         }
         /** @var \T4\Orm\Model $class */
-        $result = $class::getDbConnection()->query($query, $params)->fetchAllObjects($class);
-        if (!empty($result)) {
-            $ret = new Collection($result);
-            $ret->setNew(false);
-        } else {
-            $ret = new Collection();
+        $result = $class::getDbConnection()->query($query, $params)->fetchAll(\PDO::FETCH_ASSOC);
+        $ret = new Collection();
+        foreach ($result as $item) {
+            $ret->add((new $class())->setNew(false)->fromArray($item, true));
         }
         return $ret;
     }
@@ -358,9 +356,10 @@ class Pgsql
             $query = $this->makeQueryString($query);
         }
         /** @var \T4\Orm\Model $class */
-        $result = $class::getDbConnection()->query($query, $params)->fetchObject($class);
-        if (!empty($result))
-            $result->setNew(false);
+        $result = $class::getDbConnection()->query($query, $params)->fetch(\PDO::FETCH_ASSOC);
+        if (!empty($result)) {
+            $result = (new $class())->setNew(false)->fromArray($result, true);
+        }
         return $result;
     }
 

@@ -8,6 +8,8 @@ trait TCrud
     protected $isNew = true;
     protected $wasNew = false;
     protected $isDeleted = false;
+    protected $isUpdated = false;
+    protected $wasUpdated = false;
 
     /**
      * @param bool $new
@@ -51,6 +53,22 @@ trait TCrud
     public function isDeleted()
     {
         return $this->isDeleted;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUpdated()
+    {
+        return $this->isUpdated;
+    }
+
+    /**
+     * @return bool
+     */
+    public function wasUpdated()
+    {
+        return $this->wasUpdated;
     }
 
     /**
