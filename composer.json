@@ -1,10 +1,10 @@
 {
-  "name": "pr-of-it/t4",
-  "description": "T4 framework",
+  "name": "Maximus905/t4fork",
+  "description": "This is a fork T4 framework (pr-of-it/t4)",
   "keywords": [
     "php",
     "framework",
-    "t4"
+    "t4fork"
   ],
   "type": "library",
   "minimum-stability": "dev",
