@@ -118,5 +118,33 @@ class Standard
         }
         return true;
     }
+    
+    public function afterSave(Model &$model)
+    {
+        $class = get_class($model);
+        $columns = $class::getColumns();
+        foreach ($columns as $name => $column) {
+            if ($column['type'] == 'json' && null !== $model->$name) {
+                $decoded = json_decode($model->$name, true, 512, JSON_BIGINT_AS_STRING);
+                if (is_scalar($decoded)) {
+                    $model->$name = $decoded;
+                } else {
+                    if (
+                        !empty($column['class'])
+                        &&
+                        class_exists($column['class'])
+                        &&
+                        (is_subclass_of($column['class'], Std::class) || is_subclass_of($column['class'], Collection::class))
+                    ) {
+                        $class = $column['class'];
+                        $model->$name = new $class($decoded);
+                    } else {
+                        $model->$name = new Std($decoded);
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
 }

@@ -374,9 +374,11 @@ trait TRelations
         }
 
         foreach ( $newSubModelsSet ?: [] as $subModel ) {
-            /** @var \T4\Orm\Model $subModel */
-            $subModel->{$column} = $this->getPk();
-            $subModel->save();
+            if ($subModel->isNew() || $subModel->isUpdated()) {
+                /** @var \T4\Orm\Model $subModel */
+                $subModel->{$column} = $this->getPk();
+                $subModel->save();
+            }
         }
     }
 
